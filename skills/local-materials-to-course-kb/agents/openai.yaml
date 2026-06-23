@@ -1,0 +1,6 @@
+interface:
+  display_name: "本地资料转课程知识库"
+  short_description: "把本地文档沉淀为课程知识库、案例库和审核记录"
+  default_prompt: "Use $local-materials-to-course-kb to整理本地文档资料，生成课程知识库、案例库和审核记录。"
+policy:
+  allow_implicit_invocation: true
