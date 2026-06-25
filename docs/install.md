@@ -64,6 +64,29 @@ python3 skills/local-materials-to-course-kb/scripts/init_course_kb.py
 
 如果这些文件或文件夹已经存在，脚本不会覆盖已有内容，只会补缺失项。
 
+## 维护脚本
+
+初始化脚本只负责搭好架子。日常跑久了以后，可以用另外两个脚本做检查。
+
+盘点待处理资料和待复核工作区：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/queue_inventory.py
+```
+
+检查知识库结构、图片链接和常见问题：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py
+```
+
+如果你不是在项目根目录运行脚本，可以指定知识库路径：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/queue_inventory.py --root "~/Desktop/AI工作台/06_培训教程与分享资料/本地资料转课程知识库"
+python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py --root "~/Desktop/AI工作台/06_培训教程与分享资料/本地资料转课程知识库"
+```
+
 ## 日常怎么用
 
 把待处理资料放进：
@@ -93,4 +116,3 @@ media/Done/YYYY-MM-DD_批次名
 不建议一次把所有资料直接叫 Codex 深度处理。更好的方式是把资料都放进 `TBD`，让 skill 自动分批。
 
 也不建议把已经处理过的资料再放回 `TBD`，除非你确实想重新沉淀。
-

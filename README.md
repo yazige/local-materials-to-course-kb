@@ -71,6 +71,15 @@ Codex 每次运行时会从 `TBD` 中挑一个合适批次，移动到当前批�
 
 这比一直守在电脑前等额度恢复体面一点。至少人可以睡觉，资料慢慢排队。
 
+### 4. 有维护脚本，方便长期跑
+
+资料真正跑起来之后，`TBD`、`Done` 和 `98_音视频处理工作区` 都会变多。项目现在带了两个小脚本：
+
+- `queue_inventory.py`：只盘点队列和待复核工作区，不读取资料正文；
+- `verify_course_kb.py`：检查目录、索引、图片链接和常见结构问题。
+
+它们的作用不是替 Codex 做判断，而是让你先看清楚仓库里还有多少东西没收口。
+
 ## 项目结构
 
 ```text
@@ -81,7 +90,11 @@ Codex 每次运行时会从 `TBD` 中挑一个合适批次，移动到当前批�
 │   ├── automation.md
 │   ├── history.md
 │   ├── install.md
+│   ├── maintenance.md
+│   ├── testing.md
 │   └── video-to-course-kb.md
+├── tests
+│   └── test_maintenance_scripts.py
 └── skills
     └── local-materials-to-course-kb
         ├── SKILL.md
@@ -89,9 +102,14 @@ Codex 每次运行时会从 `TBD` 中挑一个合适批次，移动到当前批�
         │   └── openai.yaml
         ├── references
         │   ├── classification-and-audit.md
-        │   └── english-source-localization.md
+        │   ├── completion-checklist.md
+        │   ├── english-source-localization.md
+        │   ├── media-package-and-ppt.md
+        │   └── workspace-lifecycle.md
         └── scripts
-            └── init_course_kb.py
+            ├── init_course_kb.py
+            ├── queue_inventory.py
+            └── verify_course_kb.py
 ```
 
 ## 快速开始
@@ -120,7 +138,9 @@ Codex 每次运行时会从 `TBD` 中挑一个合适批次，移动到当前批�
 
 - [安装与初始化](docs/install.md)
 - [Codex 自动化设置](docs/automation.md)
+- [队列维护与复核收口](docs/maintenance.md)
 - [视频资料转课程知识库流程](docs/video-to-course-kb.md)
+- [测试与回归样例](docs/testing.md)
 - [这个 skill 是怎么一步步改出来的](docs/history.md)
 
 ## 和通义听悟配合
