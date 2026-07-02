@@ -24,11 +24,12 @@ skills/local-materials-to-course-kb/references/automation-presets.md
 - 完成审核、索引和验证后才归档；
 - 中断时写状态，不把半成品移入 Done。
 
-建议按资料投放节奏设置，不必高频空跑。
+TBD 较多时安排在低使用时段，避开 Codex 高频使用时间。每次仍只处理一个批次，
+不得一轮清空或持续扩大上下文。
 
 ## 2. 本地知识库每周体检
 
-作用：检查队列积压、断链、孤立页面、重复主题、过时内容和旧路径残留。
+作用：检查断链、重复、孤岛、未整理、待确认、过期、索引覆盖和队列积压。
 
 边界：
 
@@ -36,6 +37,8 @@ skills/local-materials-to-course-kb/references/automation-presets.md
 - 先给问题清单；
 - 不自动批量修复；
 - 不触发资料沉淀。
+
+固定输出健康分、问题、最优先的 3 件事和下一步。
 
 建议每周一次。
 
@@ -47,8 +50,10 @@ skills/local-materials-to-course-kb/references/automation-presets.md
 
 - 只读 `待复核/创作复盘`；
 - 材料不全时不猜测；
-- 单次复盘进入 `reviews/`；
-- 重复出现的稳定规律才进入 `wiki/`；
+- 对照 AI 初稿、修改意见和最终稿；
+- 区分稳定规律、待观察和待确认；
+- 单次复盘进入 `reviews/`，重复出现的稳定规律才进入 `wiki/`；
+- 只允许写入 `reviews/`、指定 `wiki/`、`index.md` 和 `log.md`；
 - 不读取课程资料复核区。
 
 建议每周一次，或安排在固定创作日之后。

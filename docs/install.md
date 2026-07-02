@@ -72,3 +72,6 @@ python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py \
 4. 完成验证后，源资料进入 `素材/待整理/Done/YYYY-MM-DD_批次名`。
 
 `Done` 默认只读。不要把已处理资料放回 TBD，除非你明确要重新沉淀。
+
+如果从零开始，先按[个人知识库建库指南](build-your-personal-kb.md)完成 Vault、采访、
+三层结构、入口页和验证，再安装 Skill。不要把 Skill 安装当成知识库架构本身。
