@@ -10,7 +10,7 @@ Write Chinese-first outputs:
 
 | Output | Rule |
 |---|---|
-| `01_知识主文档.md` | Chinese explanations, Chinese headings, Chinese frameworks. Do not paste long English paragraphs. |
+| `01_知识主题/<主题>.md` | Chinese explanations, headings and frameworks. Update `01_知识主文档.md` navigation; do not paste long English paragraphs. |
 | `02_案例库.md` | Original English screenshots are allowed as evidence, but case title, teaching value, risk notes, and image alt text must be Chinese. |
 | `03_可复用话术&模板.md` | Rebuild as Chinese SOPs, checklists, tables, talk tracks, or prompts. |
 | `00_索引.md` and `00_总索引.md` | Chinese summaries and Chinese course names. |

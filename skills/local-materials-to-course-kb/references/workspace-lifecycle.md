@@ -2,74 +2,57 @@
 
 ## Purpose
 
-Use this reference when the knowledge base contains `98_音视频处理工作区/`, draft folders marked `待复核`, or many generated media-package outputs waiting to be reviewed.
+Use this reference when `素材/待整理/待复核/课程资料/` contains draft folders or generated course-package outputs.
 
-The work area is a review and staging zone. It is not the automatic source queue. New source materials still enter through `media/TBD/`; processed source materials still move to `media/Done/`.
+The review area is not the source queue. New sources enter through `TBD`; completed sources move to `Done`.
 
 ## Folder Roles
 
 | Area | Role | Rule |
 |---|---|---|
-| `media/TBD/` | New source-material inbox | Select only one coherent batch per run. |
-| `media/当前批次_*_处理中/` | Active source batch | Preserve until the batch is complete or safely paused. |
-| `media/Done/` | Processed source-material holding area | Do not re-read automatically. |
-| `98_音视频处理工作区/` | Draft extraction, transcript, notes, audit, and candidate-write workspace | Review and close deliberately; do not treat every folder as new source. |
+| `素材/待整理/TBD/` | New source inbox | Select only one coherent batch per run. |
+| `素材/待整理/当前批次_*_处理中/` | Active source batch | Preserve until complete or safely paused. |
+| `素材/待整理/Done/` | Processed source archive | Keep read-only; do not re-read automatically. |
+| `素材/待整理/待复核/课程资料/` | Draft extraction, audit and candidate-write area | Review deliberately; do not treat as new input. |
+| `素材/待整理/待复核/创作复盘/` | AI draft, human feedback and final-copy comparisons | Keep separate from course-material review. |
 
 ## Status Suffixes
 
-Use one of these suffixes in work-area folder names:
-
 | Status | Meaning | Next action |
 |---|---|---|
-| `处理中` | Extraction or draft creation is still active | Resume from the newest status note before selecting new sources. |
-| `测试中` | Output format or extraction quality is being checked | Verify before official writes. |
-| `待复核` | Drafts exist and need review, deduplication, audit, or official write decision | Prefer closing these before creating more draft work. |
-| `已写入` | Approved content has been written to official category files and indexes | Keep for short-term traceability or move to archive. |
-| `已归档` | Review is finished and no more action is expected | Do not reopen unless the user asks. |
+| `处理中` | Extraction or drafting is active | Resume before selecting new sources. |
+| `测试中` | Output or extraction quality is being checked | Verify before official writes. |
+| `待复核` | Draft needs review, deduplication or audit | Prefer closing it before adding more drafts. |
+| `已写入` | Approved content is in official pages and indexes | Keep for short-term traceability. |
+| `已归档` | Review is finished | Do not reopen unless asked. |
 
 ## Start-of-Run Rule
 
-At the start of a run:
-
 1. Read `00_任务状态/当前批次状态.md`.
-2. Check `media/当前批次_*_处理中/`.
-3. Inventory `98_音视频处理工作区/` by status, without deep-reading every draft folder.
-4. If there are many `待复核` folders, report the count and recommend a review batch before starting new extraction.
-5. If the user or automation explicitly asks to continue `TBD`, still process only one coherent source batch and leave the review backlog visible.
+2. Check `素材/待整理/当前批次_*_处理中/`.
+3. Inventory `待复核/课程资料/` by status without opening every folder.
+4. If many items are waiting, report the count and recommend a 1–3 item review batch.
+5. If the task explicitly continues TBD, process only one coherent source batch and leave the review backlog visible.
 
-Use `scripts/queue_inventory.py` for a quick inventory when the queue is large.
+Use `scripts/queue_inventory.py --vault-root "<vault>"` for a quick inventory.
 
 ## Review-Batch Rule
 
-When closing a `待复核` work-area folder:
+When closing a course review item:
 
-1. Read only that selected work-area folder plus the official category files needed for deduplication.
-2. Start from `06_待写入知识库内容/` when present; do not restart from raw media unless the draft is clearly incomplete.
+1. Read only the selected item and official topic pages needed for deduplication.
+2. Start from `06_待写入知识库内容/` when present; do not restart from raw media unless the draft is incomplete.
 3. Check `05_审核记录/` before official writes.
-4. Write only approved, deduplicated, course-ready content into official category files.
-5. Update root index, category index, case table, audit record, and `00_任务状态/当前批次状态.md`.
-6. Rename the work-area folder from `待复核` to `已写入` only after official files and indexes are updated.
-7. Rename to `已归档` when the folder is kept only for traceability and no further action is expected.
+4. Write approved, deduplicated content into `01_知识主题/`, then update `01_知识主文档.md` navigation.
+5. Update root index, category index, case table, audit record and current batch status.
+6. Mark `已写入` only after official files and indexes match.
+7. Mark `已归档` when no more action is expected.
 
-Do not delete work-area folders unless the user explicitly asks. If cleanup is needed, propose an archive move first.
-
-## Recommended Review Inventory Output
-
-For a large backlog, report:
-
-| Field | Meaning |
-|---|---|
-| work_area_total | Total top-level folders under `98_音视频处理工作区/`. |
-| status_counts | Count by suffix: `处理中`, `测试中`, `待复核`, `已写入`, `已归档`, `未标注`. |
-| review_backlog | The first 10-30 `待复核` folders. |
-| recommended_review_batch | 1-3 related folders to close next. |
-| risk_note | Any names suggesting account safety, fees, ads policy, legal, tax, or high-risk tactics. |
+Do not delete review items unless the user explicitly asks.
 
 ## Completion Rule
 
-Before reporting that a run is complete:
-
-- no active source batch should be left without a status update;
-- new source files should be either still in `TBD`, inside the active batch, or moved to `Done`;
-- any touched work-area folder should have a clear suffix and a next action;
-- official writes should be verifiable through indexes and audit records.
+- no active source batch is left without a status update;
+- source files remain in TBD, the active batch, or Done;
+- touched review items have a clear status and next action;
+- official writes are discoverable through indexes and audit records.

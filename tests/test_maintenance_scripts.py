@@ -10,7 +10,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PROJECT_ROOT / "skills" / "local-materials-to-course-kb"
-INIT_SCRIPT = SKILL_ROOT / "scripts" / "init_course_kb.py"
+INIT_SCRIPT = SKILL_ROOT / "scripts" / "init_personal_kb.py"
 QUEUE_SCRIPT = SKILL_ROOT / "scripts" / "queue_inventory.py"
 VERIFY_SCRIPT = SKILL_ROOT / "scripts" / "verify_course_kb.py"
 
@@ -29,7 +29,7 @@ def run_json(script: Path, *args: str) -> tuple[int, dict]:
 
 def init_kb(root: Path) -> None:
     subprocess.run(
-        [sys.executable, str(INIT_SCRIPT), "--root", str(root)],
+        [sys.executable, str(INIT_SCRIPT), "--vault-root", str(root)],
         check=True,
         text=True,
         stdout=subprocess.PIPE,
@@ -43,27 +43,31 @@ class MaintenanceScriptsTest(unittest.TestCase):
             root = Path(tmp_dir) / "kb"
             init_kb(root)
 
-            (root / "media" / "TBD" / ".DS_Store").write_text("mac metadata")
-            (root / "media" / "TBD" / "2025-广告课").mkdir()
-            (root / "media" / "TBD" / "2025-账号风控.pdf").write_text(
+            queue = root / "素材" / "待整理"
+            (queue / "TBD" / ".DS_Store").write_text("mac metadata")
+            (queue / "TBD" / "2025-广告课").mkdir()
+            (queue / "TBD" / "2025-账号风控.pdf").write_text(
                 "pdf placeholder"
             )
-            (root / "media" / "Done" / "2026-06-25_已完成批次").mkdir()
+            (queue / "Done" / "2026-06-25_已完成批次").mkdir()
 
-            work_area = root / "98_音视频处理工作区"
+            work_area = queue / "待复核" / "课程资料"
             (work_area / "2026-06-25_广告课_音视频转课程知识库_v1_待复核").mkdir(
                 parents=True
             )
             (work_area / "2026-06-25_账号风控_音视频转课程知识库_v1_处理中").mkdir()
 
-            code, report = run_json(QUEUE_SCRIPT, "--root", str(root))
+            code, report = run_json(QUEUE_SCRIPT, "--vault-root", str(root))
 
             self.assertEqual(code, 0)
-            self.assertEqual(report["media"]["tbd_count"], 2)
-            self.assertEqual(report["media"]["done_count"], 1)
-            self.assertEqual(report["media"]["hidden_ignored_count"], 1)
-            self.assertEqual(report["work_area"]["total_dirs"], 2)
-            self.assertEqual(report["work_area"]["status_counts"], {"待复核": 1, "处理中": 1})
+            self.assertEqual(report["queue"]["tbd_count"], 2)
+            self.assertEqual(report["queue"]["done_count"], 1)
+            self.assertEqual(report["queue"]["hidden_ignored_count"], 1)
+            self.assertEqual(report["course_review"]["total_items"], 2)
+            self.assertEqual(
+                report["course_review"]["status_counts"],
+                {"待复核": 1, "处理中": 1},
+            )
             self.assertIn("先收口", report["next_recommended_action"])
 
 
@@ -71,26 +75,31 @@ class MaintenanceScriptsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir) / "kb"
             init_kb(root)
-            (root / "media" / "Done").rmdir()
+            (root / "素材" / "待整理" / "Done").rmdir()
 
-            code, report = run_json(VERIFY_SCRIPT, "--root", str(root))
+            code, report = run_json(VERIFY_SCRIPT, "--vault-root", str(root))
 
             self.assertEqual(code, 1)
-            self.assertTrue(any("media/Done" in item for item in report["errors"]))
+            self.assertTrue(
+                any("素材/待整理/Done" in item for item in report["errors"])
+            )
 
 
     def test_verify_course_kb_accepts_initialized_structure_with_warnings(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir) / "kb"
             init_kb(root)
-            (root / "media" / ".DS_Store").write_text("mac metadata")
+            (root / "素材" / "待整理" / ".DS_Store").write_text("mac metadata")
             (
                 root
-                / "98_音视频处理工作区"
+                / "素材"
+                / "待整理"
+                / "待复核"
+                / "课程资料"
                 / "2026-06-25_广告课_音视频转课程知识库_v1_待复核"
             ).mkdir(parents=True)
 
-            code, report = run_json(VERIFY_SCRIPT, "--root", str(root))
+            code, report = run_json(VERIFY_SCRIPT, "--vault-root", str(root))
 
             self.assertEqual(code, 0)
             self.assertEqual(report["errors"], [])

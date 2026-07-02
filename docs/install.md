@@ -1,118 +1,74 @@
 # 安装与初始化
 
-## 适用环境
+## 需要什么
 
-这个项目主要面向 Codex 的本地 skill 工作流。你需要：
+- Codex；
+- Python 3；
+- 一个长期使用的本地目录；
+- Obsidian（推荐，但不是脚本运行的必需品）。
 
-- 一台能运行 Codex 的电脑；
-- Python 3，用来运行初始化脚本；
-- 一个用于存放知识库的本地目录。
+## 安装 Skill
 
-默认目录是：
-
-```text
-~/Desktop/AI工作台/06_培训教程与分享资料/本地资料转课程知识库
-```
-
-如果你不想用这个目录，可以在运行初始化脚本时指定自己的路径。
-
-## 安装 skill
-
-把项目里的这个文件夹复制到你的 Codex skill 目录：
+把项目中的目录复制到 Codex Skills 目录：
 
 ```text
 skills/local-materials-to-course-kb
 ```
 
-复制后，重启 Codex。重启是为了让 Codex 重新读取 skill。
+复制后重启 Codex，让应用重新读取 Skill。
 
-## 初始化知识库
-
-在 Codex 里说：
-
-```text
-使用 local-materials-to-course-kb 初始化课程知识库。
-```
-
-或者直接运行初始化脚本：
+## 初始化完整个人知识库
 
 ```bash
-python3 skills/local-materials-to-course-kb/scripts/init_course_kb.py
+python3 skills/local-materials-to-course-kb/scripts/init_personal_kb.py \
+  --vault-root "/你的/个人知识库路径"
 ```
 
-脚本会自动创建：
+如果你已经有个人知识库，只想补齐课程区：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/init_course_kb.py \
+  --vault-root "/你的/个人知识库路径"
+```
+
+脚本只创建缺失项，不覆盖已有文件。
+
+## 初始化后的关键目录
 
 ```text
-本地资料转课程知识库/
-├── 00_总索引.md
-├── 00_任务状态/
-│   ├── 当前批次状态.md
-│   └── 待处理资料队列.md
-├── 99_审核与不沉淀记录.md
-├── media/
+<vault>/
+├── 素材/待整理/
 │   ├── TBD/
-│   └── Done/
-├── A-岗前通用&基础认知/
-├── B-Amazon运营&Listing优化/
-├── C-广告推广&站外增长/
-├── D-选品调研&产品开发/
-├── E-项目管理&跨部门协作/
-├── F-制度流程&SOP宣讲/
-├── G-管理领导力&导师培养/
-└── H-个人成长&读书技能分享/
+│   ├── Done/
+│   └── 待复核/
+│       ├── 课程资料/
+│       └── 创作复盘/
+└── 知识库/课程知识库/
+    ├── 00_任务状态/
+    ├── 00_总索引.md
+    ├── 99_审核与不沉淀记录.md
+    └── A-H 八个标准分类/
+        ├── 01_知识主文档.md
+        └── 01_知识主题/
 ```
 
-如果这些文件或文件夹已经存在，脚本不会覆盖已有内容，只会补缺失项。
-
-## 维护脚本
-
-初始化脚本只负责搭好架子。日常跑久了以后，可以用另外两个脚本做检查。
-
-盘点待处理资料和待复核工作区：
+## 验证
 
 ```bash
-python3 skills/local-materials-to-course-kb/scripts/queue_inventory.py
+python3 skills/local-materials-to-course-kb/scripts/queue_inventory.py \
+  --vault-root "/你的/个人知识库路径"
+
+python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py \
+  --vault-root "/你的/个人知识库路径"
 ```
 
-检查知识库结构、图片链接和常见问题：
+旧版 `--root` 参数仍保留，但新安装建议统一使用 `--vault-root`。
 
-```bash
-python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py
-```
+## 日常使用
 
-如果你不是在项目根目录运行脚本，可以指定知识库路径：
+1. 把新资料放进 `素材/待整理/TBD`。
+2. 让 Codex 使用 `$local-materials-to-course-kb` 盘点。
+3. 每次只处理一个批次。
+4. 完成验证后，源资料进入 `素材/待整理/Done/YYYY-MM-DD_批次名`。
 
-```bash
-python3 skills/local-materials-to-course-kb/scripts/queue_inventory.py --root "~/Desktop/AI工作台/06_培训教程与分享资料/本地资料转课程知识库"
-python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py --root "~/Desktop/AI工作台/06_培训教程与分享资料/本地资料转课程知识库"
-```
-
-## 日常怎么用
-
-把待处理资料放进：
-
-```text
-media/TBD
-```
-
-然后告诉 Codex：
-
-```text
-使用 local-materials-to-course-kb 继续沉淀 TBD 里的资料。
-```
-
-Codex 会先判断资料数量、类型、复杂度、信息密度和分类跨度，再选择一个合理批次处理。
-
-处理完成后，源资料会移动到：
-
-```text
-media/Done/YYYY-MM-DD_批次名
-```
-
-`Done` 里的资料不会被重复处理。你可以之后人工看一遍，没价值的再删。
-
-## 不建议怎么用
-
-不建议一次把所有资料直接叫 Codex 深度处理。更好的方式是把资料都放进 `TBD`，让 skill 自动分批。
-
-也不建议把已经处理过的资料再放回 `TBD`，除非你确实想重新沉淀。
+`Done` 默认只读。不要把已处理资料放回 TBD，除非你明确要重新沉淀。

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the course knowledge-base structure and common maintenance issues."""
+"""Verify the portable vault layout and course knowledge-base structure."""
 
 from __future__ import annotations
 
@@ -7,11 +7,13 @@ import argparse
 import json
 import re
 from pathlib import Path
+from typing import Optional
 
-from init_course_kb import CATEGORIES, DEFAULT_ROOT
+from init_course_kb import CATEGORIES, DEFAULT_VAULT_ROOT, resolve_roots
 
 
 IMAGE_LINK_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
+EXPECTED_CATEGORY_NAMES = {name for name, _desc in CATEGORIES}
 
 
 def relative_label(root: Path, path: Path) -> str:
@@ -22,10 +24,7 @@ def relative_label(root: Path, path: Path) -> str:
 
 
 def add_missing(errors: list[str], root: Path, path: Path, kind: str) -> None:
-    if kind == "folder":
-        exists = path.is_dir()
-    else:
-        exists = path.is_file()
+    exists = path.is_dir() if kind == "folder" else path.is_file()
     if not exists:
         errors.append(f"缺少{kind}: {relative_label(root, path)}")
 
@@ -51,75 +50,104 @@ def check_markdown_images(root: Path, markdown_file: Path, errors: list[str]) ->
             errors.append(f"图片链接不存在: {label} -> {target}")
 
 
-def build_report(root: Path) -> dict:
-    root = root.expanduser()
+def build_report(
+    vault_root: Optional[Path] = None,
+    course_root: Optional[Path] = None,
+) -> dict:
+    vault, course, queue = resolve_roots(vault_root, course_root)
     errors: list[str] = []
     warnings: list[str] = []
 
     required_files = [
-        root / "00_总索引.md",
-        root / "99_审核与不沉淀记录.md",
-        root / "00_任务状态" / "当前批次状态.md",
-        root / "00_任务状态" / "待处理资料队列.md",
+        course / "00_总索引.md",
+        course / "99_审核与不沉淀记录.md",
+        course / "00_任务状态" / "当前批次状态.md",
+        course / "00_任务状态" / "待处理资料队列.md",
     ]
     required_folders = [
-        root,
-        root / "00_任务状态",
-        root / "media",
-        root / "media" / "TBD",
-        root / "media" / "Done",
+        vault,
+        course,
+        course / "00_任务状态",
+        queue,
+        queue / "TBD",
+        queue / "Done",
+        queue / "待复核",
+        queue / "待复核" / "课程资料",
+        queue / "待复核" / "创作复盘",
     ]
 
     for path in required_folders:
-        add_missing(errors, root, path, "folder")
+        add_missing(errors, vault, path, "folder")
     for path in required_files:
-        add_missing(errors, root, path, "file")
+        add_missing(errors, vault, path, "file")
 
     category_reports = []
     for category, _desc in CATEGORIES:
-        category_dir = root / category
-        add_missing(errors, root, category_dir, "folder")
+        category_dir = course / category
+        add_missing(errors, vault, category_dir, "folder")
         category_files = [
             category_dir / "00_索引.md",
             category_dir / "01_知识主文档.md",
             category_dir / "02_案例库.md",
             category_dir / "03_可复用话术&模板.md",
         ]
-        add_missing(errors, root, category_dir / "images", "folder")
+        add_missing(errors, vault, category_dir / "01_知识主题", "folder")
+        add_missing(errors, vault, category_dir / "images", "folder")
         for path in category_files:
-            add_missing(errors, root, path, "file")
-            check_markdown_images(root, path, errors)
+            add_missing(errors, vault, path, "file")
+        if category_dir.exists():
+            markdown_files = category_files + list(
+                (category_dir / "01_知识主题").glob("*.md")
+            )
+            for path in markdown_files:
+                check_markdown_images(vault, path, errors)
         category_reports.append({"name": category, "path": str(category_dir)})
 
-    for hidden in sorted(root.rglob(".DS_Store")):
-        warnings.append(f"发现 macOS 隐藏文件，可忽略或清理: {relative_label(root, hidden)}")
+    if course.exists():
+        actual_categories = {
+            child.name
+            for child in course.iterdir()
+            if child.is_dir() and len(child.name) > 2 and child.name[1:2] == "-"
+        }
+        for name in sorted(actual_categories - EXPECTED_CATEGORY_NAMES):
+            warnings.append(f"发现额外分类，验证器未将其计入标准八类: {name}")
 
-    media = root / "media"
-    if media.exists():
-        for active in sorted(media.glob("当前批次_*_处理中")):
-            warnings.append(f"发现未完成当前批次: {relative_label(root, active)}")
+    hidden_files = sorted(vault.rglob(".DS_Store"))
+    if hidden_files:
+        examples = "、".join(
+            relative_label(vault, path) for path in hidden_files[:5]
+        )
+        suffix = " 等" if len(hidden_files) > 5 else ""
+        warnings.append(
+            f"发现 {len(hidden_files)} 个 macOS 隐藏文件，可忽略或清理: "
+            f"{examples}{suffix}"
+        )
 
-    work_area = root / "98_音视频处理工作区"
+    for active in sorted(queue.glob("当前批次_*_处理中")):
+        warnings.append(f"发现未完成当前批次: {relative_label(vault, active)}")
+
+    review_area = queue / "待复核" / "课程资料"
     work_status_counts: dict[str, int] = {}
-    if work_area.exists():
-        for child in sorted(work_area.iterdir(), key=lambda item: item.name):
-            if child.name.startswith(".") or not child.is_dir():
+    if review_area.exists():
+        for child in sorted(review_area.iterdir(), key=lambda item: item.name):
+            if child.name.startswith("."):
                 continue
             status = visible_status(child.name)
             work_status_counts[status] = work_status_counts.get(status, 0) + 1
         review_count = work_status_counts.get("待复核", 0)
         if review_count:
             warnings.append(
-                f"98_音视频处理工作区 有 {review_count} 个待复核工作区，建议先盘点收口。"
+                f"课程资料区有 {review_count} 项待复核，建议先盘点收口。"
             )
 
     return {
-        "root": str(root),
+        "vault_root": str(vault),
+        "course_root": str(course),
         "ok": not errors,
         "errors": errors,
         "warnings": warnings,
         "category_count": len(category_reports),
-        "work_area_status_counts": work_status_counts,
+        "course_review_status_counts": work_status_counts,
     }
 
 
@@ -127,35 +155,46 @@ def render_markdown(report: dict) -> str:
     lines = [
         "# 本地资料转课程知识库结构验证",
         "",
-        f"- 根目录：`{report['root']}`",
+        f"- 知识库根目录：`{report['vault_root']}`",
+        f"- 课程知识库：`{report['course_root']}`",
         f"- 结构状态：{'通过' if report['ok'] else '存在错误'}",
-        f"- 分类数量：{report['category_count']}",
+        f"- 标准分类数量：{report['category_count']}",
         "",
         "## 错误",
         "",
     ]
-    if report["errors"]:
-        lines.extend(f"- {item}" for item in report["errors"])
-    else:
-        lines.append("- 无")
+    lines.extend(f"- {item}" for item in report["errors"]) if report[
+        "errors"
+    ] else lines.append("- 无")
 
     lines.extend(["", "## 警告", ""])
-    if report["warnings"]:
-        lines.extend(f"- {item}" for item in report["warnings"])
-    else:
-        lines.append("- 无")
+    lines.extend(f"- {item}" for item in report["warnings"]) if report[
+        "warnings"
+    ] else lines.append("- 无")
     return "\n".join(lines) + "\n"
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Check required folders, Markdown image links, and queue state."
+        description="Check the vault queue, course pages, image links, and review backlog."
     )
-    parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
+    parser.add_argument(
+        "--vault-root",
+        type=Path,
+        help="Personal knowledge-base root. This is the preferred option.",
+    )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        help="Legacy course-root option, kept for compatibility.",
+    )
     parser.add_argument("--format", choices=["markdown", "json"], default="markdown")
     args = parser.parse_args()
 
-    report = build_report(args.root)
+    if args.root is not None and args.vault_root is None:
+        report = build_report(course_root=args.root)
+    else:
+        report = build_report(vault_root=args.vault_root or DEFAULT_VAULT_ROOT)
     if args.format == "json":
         print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
