@@ -1,20 +1,15 @@
 #!/usr/bin/env python3
-"""Initialize the local course knowledge-base folder structure."""
+"""Initialize the course area inside a local Markdown knowledge base."""
 
 from __future__ import annotations
 
 import argparse
 from datetime import date
 from pathlib import Path
+from typing import Optional
 
 
-DEFAULT_ROOT = (
-    Path.home()
-    / "Desktop"
-    / "AI工作台"
-    / "06_培训教程与分享资料"
-    / "本地资料转课程知识库"
-)
+DEFAULT_VAULT_ROOT = Path.home() / "Documents" / "个人知识库"
 
 CATEGORIES = [
     ("A-岗前通用&基础认知", "岗前通用、基础认知、通用工作方法"),
@@ -26,6 +21,26 @@ CATEGORIES = [
     ("G-管理领导力&导师培养", "管理、领导力、辅导、导师培养"),
     ("H-个人成长&读书技能分享", "读书、技能、思考模型、个人成长"),
 ]
+
+
+def resolve_roots(
+    vault_root: Optional[Path] = None,
+    course_root: Optional[Path] = None,
+) -> tuple[Path, Path, Path]:
+    if vault_root is not None:
+        vault = vault_root.expanduser()
+        course = vault / "知识库" / "课程知识库"
+    elif course_root is not None:
+        course = course_root.expanduser()
+        if course.parent.name == "知识库":
+            vault = course.parent.parent
+        else:
+            vault = course
+    else:
+        vault = DEFAULT_VAULT_ROOT
+        course = vault / "知识库" / "课程知识库"
+    queue = vault / "素材" / "待整理"
+    return vault, course, queue
 
 
 def write_if_missing(path: Path, content: str) -> bool:
@@ -44,11 +59,7 @@ def category_index(name: str, desc: str) -> str:
 
 创建日期：{today}
 
-## 本分类适合放什么
-
-- {desc}
-- 只放本分类主场景内容。跨课程复用时在索引中引用，不重复复制正文。
-- 费用、政策、平台入口、官方福利等强时效内容先进入审核记录，复核后再用于课程。
+主题入口：[[01_知识主文档]]；正文按主题存放在 `01_知识主题/`。
 
 ## 已沉淀资料索引
 
@@ -62,23 +73,19 @@ def category_index(name: str, desc: str) -> str:
 """
 
 
-def knowledge_doc(name: str) -> str:
+def knowledge_entry(name: str) -> str:
     return f"""# {name} - 知识主文档
 
-> 只沉淀经过审核、适合长期复用的知识。过时、错误、高风险或待核验内容不要写入这里。
+> 本页只做主题导航。新增正文写入 `01_知识主题/`，不要在入口页持续追加长内容。
 
-## 稳定知识
-
-## 方法框架
-
-## 课程讲解要点
+## 主题导航
 """
 
 
 def case_doc(name: str) -> str:
     return f"""# {name} - 案例库
 
-> 放真实案例、截图、图表、页面视觉、对比图。每张图片必须能解释它适合讲什么。
+> 放真实案例、截图、图表、页面视觉和对比图。每个案例都要注明来源和教学用途。
 
 ## 案例列表
 
@@ -90,7 +97,7 @@ def case_doc(name: str) -> str:
 def template_doc(name: str) -> str:
     return f"""# {name} - 可复用话术&模板
 
-> 放 SOP、检查清单、课程话术、提示词、表格模板说明。不要放未经审核的风险操作步骤。
+> 放 SOP、检查清单、课程话术和模板说明，不放未经审核的风险操作步骤。
 
 ## SOP
 
@@ -105,17 +112,17 @@ def template_doc(name: str) -> str:
 def root_index() -> str:
     today = date.today().isoformat()
     rows = "\n".join(f"| {name} | {desc} | | | |" for name, desc in CATEGORIES)
-    return f"""# 本地资料转课程知识库
+    return f"""# 课程知识库
 
 创建日期：{today}
 
 ## 使用原则
 
-1. 原始资料不覆盖、不删除、不直接修改。
+1. 原始资料只读保存，不覆盖。
 2. 每份资料只进入一个主分类。
-3. 先审核，再沉淀。
-4. 过时、错误、证据不足、高风险内容进入 `99_审核与不沉淀记录.md`。
-5. 黑科技只保留风险识别、防御、自查和合规替代方案，不保留可执行教程。
+3. 先审核、去重，再沉淀。
+4. 分类入口页只负责导航，正文按主题拆页。
+5. 过时、错误、证据不足和高风险内容进入审核记录。
 
 ## 八大分类总览
 
@@ -133,24 +140,19 @@ def root_index() -> str:
 def audit_doc() -> str:
     return """# 审核与不沉淀记录
 
-> 记录不适合进入主知识库的内容，包括过时、错误、证据不足、待核验、高风险和仅保留防御的内容。
+> 记录不适合进入正式知识页的内容，包括过时、错误、证据不足、待核验和高风险内容。
 
 ## 不沉淀知识清单
 
-| 日期 | 来源资料 | 内容摘要 | 判断 | 不沉淀原因 | 可保留的安全知识 | 建议动作 |
+| 日期 | 来源资料 | 内容摘要 | 判断 | 不沉淀原因 | 安全保留内容 | 建议动作 |
 |---|---|---|---|---|---|---|
-
-## 高风险/黑科技防御记录
-
-| 日期 | 来源资料 | 风险类型 | 高层描述 | 防御与自查 | 合规替代方案 |
-|---|---|---|---|---|---|
 """
 
 
 def current_batch_status_doc() -> str:
     return """# 当前批次状态
 
-> 自动化或人工继续沉淀前，先查看这里。若无未完成批次，填写 queue_status 即可。
+> 每次沉淀前先查看这里。存在未完成批次时，先恢复，不选择新资料。
 
 ## 当前状态
 
@@ -163,7 +165,6 @@ def current_batch_status_doc() -> str:
 | completed_work |  |
 | pending_work |  |
 | chosen_primary_category |  |
-| subagent_card_locations |  |
 | audit_status |  |
 | index_update_status |  |
 | next_action |  |
@@ -173,29 +174,36 @@ def current_batch_status_doc() -> str:
 def pending_queue_doc() -> str:
     return """# 待处理资料队列
 
-> 当新资料暂不适合立刻沉淀，或自动化需要记录下一批建议时，写在这里。
-
 | 日期 | 文件/文件夹路径 | 推断主题 | 可能分类 | 复杂度 | 信息密度 | 建议批次 | 状态 |
 |---|---|---|---|---|---|---|---|
 """
 
 
-def init_kb(root: Path, dry_run: bool) -> None:
+def init_kb(course_root: Path, queue_root: Path, dry_run: bool = False) -> None:
     targets: list[tuple[Path, str | None]] = [
-        (root / "00_总索引.md", root_index()),
-        (root / "99_审核与不沉淀记录.md", audit_doc()),
-        (root / "00_任务状态" / "当前批次状态.md", current_batch_status_doc()),
-        (root / "00_任务状态" / "待处理资料队列.md", pending_queue_doc()),
-        (root / "media" / "TBD", None),
-        (root / "media" / "Done", None),
+        (course_root / "00_总索引.md", root_index()),
+        (course_root / "99_审核与不沉淀记录.md", audit_doc()),
+        (
+            course_root / "00_任务状态" / "当前批次状态.md",
+            current_batch_status_doc(),
+        ),
+        (
+            course_root / "00_任务状态" / "待处理资料队列.md",
+            pending_queue_doc(),
+        ),
+        (queue_root / "TBD", None),
+        (queue_root / "Done", None),
+        (queue_root / "待复核" / "课程资料", None),
+        (queue_root / "待复核" / "创作复盘", None),
     ]
 
     for name, desc in CATEGORIES:
-        category_dir = root / name
+        category_dir = course_root / name
         targets.extend(
             [
                 (category_dir / "00_索引.md", category_index(name, desc)),
-                (category_dir / "01_知识主文档.md", knowledge_doc(name)),
+                (category_dir / "01_知识主文档.md", knowledge_entry(name)),
+                (category_dir / "01_知识主题", None),
                 (category_dir / "02_案例库.md", case_doc(name)),
                 (category_dir / "03_可复用话术&模板.md", template_doc(name)),
                 (category_dir / "images", None),
@@ -221,28 +229,26 @@ def init_kb(root: Path, dry_run: bool) -> None:
             skipped += 1
 
     if not dry_run:
-        print(f"Knowledge base ready: {root}")
+        print(f"Course knowledge base ready: {course_root}")
+        print(f"Queue ready: {queue_root}")
         print(f"Created: {created}")
         print(f"Skipped existing: {skipped}")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Create the local course knowledge-base directory template."
+        description="Create a course knowledge base inside a Markdown vault."
     )
+    parser.add_argument("--vault-root", type=Path)
     parser.add_argument(
         "--root",
         type=Path,
-        default=DEFAULT_ROOT,
-        help=f"Knowledge-base root path. Default: {DEFAULT_ROOT}",
+        help="Existing course root; prefer --vault-root for new installations.",
     )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be created without writing files.",
-    )
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
-    init_kb(args.root.expanduser(), args.dry_run)
+    _vault, course, queue = resolve_roots(args.vault_root, args.root)
+    init_kb(course, queue, args.dry_run)
 
 
 if __name__ == "__main__":

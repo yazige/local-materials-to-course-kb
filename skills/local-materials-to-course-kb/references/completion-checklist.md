@@ -5,10 +5,10 @@ Use this checklist before reporting completion for a sedimentation run.
 ## Source And Queue Safety
 
 - Original files were not overwritten.
-- Initialization Gate was run; the default root, `00_任务状态/`, `media/TBD/`, and `media/Done/` exist before source intake.
+- Initialization Gate was run; the vault root, `00_任务状态/`, `素材/待整理/TBD/`, and `素材/待整理/Done/` exist before source intake.
 - Continuation And Intake Priority Gate was run, and any unfinished previous batch was completed first or explicitly queued with a safe status handoff.
 - If new materials arrived while a previous batch was unfinished, the new materials were registered separately and not silently mixed into previous official writes.
-- If using the media queue, `media/TBD/`, `media/Done/`, and one active batch folder were handled according to the Media Queue Gate.
+- If using the source queue, `素材/待整理/TBD/`, `Done/`, and one active batch folder were handled according to the queue rules.
 - Only selected `TBD` items were moved into the active batch folder; `Done` materials were not used as new sources.
 - If started by automation, the Automation Wakeup Gate was followed and at most one coherent batch was processed.
 - If `TBD` still has remaining materials after one batch, they were left in `TBD` for the next run.
@@ -37,13 +37,14 @@ Use this checklist before reporting completion for a sedimentation run.
 - Every extracted image is referenced from a Markdown file.
 - Root and category indexes were updated, including category count, main courses, latest update, and correct table placement.
 - Case-list tables were filled when cases or images were added; useful entries were not left only in narrative sections.
-- After successful completion, processed source materials from the active batch were moved to `media/Done/YYYY-MM-DD_批次名/`, or any failure to move them was reported clearly.
-- If the active batch folder became empty after the move, it was deleted so `media/` does not accumulate stale `当前批次_*_处理中` folders.
+- New knowledge was written to `01_知识主题/`; `01_知识主文档.md` remains a navigation page.
+- After successful completion, processed source materials from the active batch were moved to `素材/待整理/Done/YYYY-MM-DD_批次名/`, or any failure to move them was reported clearly.
+- If the active batch folder became empty after the move, it was deleted so `素材/待整理/` does not accumulate stale `当前批次_*_处理中` folders.
 - If the active batch folder was not deleted, the final user message explains what remains and why.
 - The final user message states whether processed materials were moved to `Done/`, whether the active batch folder was removed, and reminds that future runs ignore `Done/` unless explicitly requested.
 
 ## Work Area And Verification
 
-- If `98_音视频处理工作区/` was touched, the selected folder has a clear suffix: `处理中`, `测试中`, `待复核`, `已写入`, or `已归档`.
+- If `素材/待整理/待复核/课程资料/` was touched, the selected item has a clear suffix: `处理中`, `测试中`, `待复核`, `已写入`, or `已归档`.
 - If many `待复核` work areas exist, the final note reports the backlog and recommended next review batch.
 - `scripts/verify_course_kb.py` was run when structural changes, index edits, images, or source moves occurred.

@@ -19,7 +19,7 @@ If one material fits several categories, choose the category that matches the ma
 
 | Content type | Write to |
 |---|---|
-| Stable concepts, frameworks, definitions, methods, including audited PPT speaker-note explanations | `01_知识主文档.md` |
+| Stable concepts, frameworks, definitions, methods, including audited PPT speaker-note explanations | `01_知识主题/<主题>.md`; update navigation in `01_知识主文档.md` |
 | Real cases, screenshots, comparisons, examples, plus speaker-note context that explains them | `02_案例库.md` and `images/` |
 | SOPs, checklists, scripts, prompt templates, reusable wording, and audited speaker talk tracks | `03_可复用话术&模板.md` |
 | Navigation, source list, course references | `00_索引.md` and root `00_总索引.md` |
