@@ -112,6 +112,19 @@ class PublicOnboardingTest(unittest.TestCase):
         for phrase in required:
             self.assertIn(phrase, first_path)
 
+    def test_readme_keeps_the_original_reader_story_and_course_use_cases(self) -> None:
+        for phrase in (
+            "资料越攒越多",
+            "适合谁",
+            "培训负责人",
+            "做 SOP",
+            "视频转写",
+            "可复用的课程资产",
+            "通义听悟",
+            "项目结构",
+        ):
+            self.assertIn(phrase, self.readme)
+
     def test_guide_explains_bounded_context_mechanism(self) -> None:
         for phrase in (
             "索引定位",
@@ -128,6 +141,28 @@ class PublicOnboardingTest(unittest.TestCase):
         self.assertIn("飞书", combined)
         self.assertIn("Karpathy", combined)
         self.assertIn("gist.github.com", combined)
+
+    def test_guide_is_self_contained_for_building_the_vault(self) -> None:
+        for phrase in (
+            "无需离开本页",
+            "下载 Obsidian",
+            "Codex 官方文档",
+            "复制下面这段提示词",
+            "先确认两个问题",
+            "一次只问一个问题",
+            "每次回答后",
+            "生活.md",
+            "工作.md",
+            "学习.md",
+            "目标_",
+            "README.md",
+            "AGENTS.md",
+            "index.md",
+            "log.md",
+            "素材/待整理/TBD",
+            "转载并改编自",
+        ):
+            self.assertIn(phrase, self.guide)
 
 
 if __name__ == "__main__":
