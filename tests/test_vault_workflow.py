@@ -85,6 +85,26 @@ class VaultWorkflowTest(unittest.TestCase):
             self.assertEqual(verify_code, 0)
             self.assertEqual(verification["errors"], [])
 
+    def test_root_index_declares_navigation_only_boundary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            vault = Path(tmp_dir) / "vault"
+            subprocess.run(
+                [sys.executable, str(INIT_PERSONAL), "--vault-root", str(vault)],
+                check=True,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            root_index = (
+                vault / "知识库" / "课程知识库" / "00_总索引.md"
+            ).read_text(encoding="utf-8")
+
+            self.assertIn(
+                "只保留导航、累计数量、最近更新和一句摘要",
+                root_index,
+            )
+            self.assertNotIn("## 知识正文", root_index)
+
     def test_skill_contains_three_paused_automation_presets(self) -> None:
         text = AUTOMATION_PRESETS.read_text(encoding="utf-8")
 

@@ -33,6 +33,7 @@ The review area is not the source queue. New sources enter through `TBD`; comple
 3. Inventory `待复核/课程资料/` by status without opening every folder.
 4. If many items are waiting, report the count and recommend a 1–3 item review batch.
 5. If the task explicitly continues TBD, process only one coherent source batch and leave the review backlog visible.
+6. Do not read raw transcripts during inventory or health checks.
 
 Use `scripts/queue_inventory.py --vault-root "<vault>"` for a quick inventory.
 
@@ -47,6 +48,8 @@ When closing a course review item:
 5. Update root index, category index, case table, audit record and current batch status.
 6. Mark `已写入` only after official files and indexes match.
 7. Mark `已归档` when no more action is expected.
+
+Raw transcripts may be opened only for the selected active batch after it enters extraction or review. If draft and audit files are complete, do not reopen raw transcripts merely for reassurance.
 
 Do not delete review items unless the user explicitly asks.
 

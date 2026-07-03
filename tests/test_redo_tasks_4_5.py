@@ -37,6 +37,18 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         ):
             self.assertIn(phrase, self.skill)
 
+    def test_skill_hardens_index_dedup_transcript_and_audit_boundaries(self) -> None:
+        for phrase in (
+            "`00_总索引.md` 只允许保存导航、累计数量、最近更新和一句摘要",
+            "去重顺序不可跳过",
+            "文件名、标题和关键词搜索",
+            "盘点和体检禁止读取原始转写稿",
+            "只有当前批次进入提取或审核阶段后",
+            "先运行 `scripts/kb_health_inventory.py`",
+            "禁止把全库正文或脚本读取到的正文批量送入模型",
+        ):
+            self.assertIn(phrase, self.skill)
+
     def test_audit_has_required_checks_and_output_contract(self) -> None:
         for phrase in (
             "断链",
