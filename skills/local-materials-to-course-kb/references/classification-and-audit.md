@@ -29,11 +29,13 @@ If one material fits several categories, choose the category that matches the ma
 
 After every material is processed:
 
-1. Add one row to the category `已沉淀资料索引` table.
-2. Add course references only to the category `相关课程引用` table. Do not put source-index rows there.
-3. Update root `八大分类总览` with cumulative count, main courses, and latest update for the touched category.
-4. Add one row to root `最近处理记录`.
-5. If images or cases were added, fill the table at the top of `02_案例库.md`.
+1. Keep root `00_总索引.md` navigation-only: category links, cumulative count, latest update and one-sentence summaries. Never add knowledge正文 there.
+2. Deduplicate in this fixed order: root index → category index → filename/title/keyword search → candidate topic pages. Never open a whole category by default.
+3. Add one row to the category `已沉淀资料索引` table.
+4. Add course references only to the category `相关课程引用` table. Do not put source-index rows there.
+5. Update root `八大分类总览` with cumulative count, main courses, and latest update for the touched category.
+6. Add one row to root `最近处理记录`.
+7. If images or cases were added, fill the table at the top of `02_案例库.md`.
 
 ## Audit Questions
 

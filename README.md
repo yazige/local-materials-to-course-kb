@@ -81,6 +81,13 @@ Obsidian 是本地 Markdown 的阅读、链接和检索界面。真正让知识�
 
 知识库增长时增加的是可定位的小页面，而不是每轮都要读取的总文档。单次上下文由当前任务决定，不会随着知识库体量线性膨胀。
 
+### 防止流程走样
+
+- `00_总索引.md` 只放导航、数量、最近更新和一句摘要；
+- 去重先查总索引和分类索引，再做文件名、标题和关键词搜索，只打开候选主题页；
+- 盘点与体检不读取原始转写，只有当前批次进入提取或审核后才读取；
+- 体检由脚本先找问题，AI 只判断少量候选，不把全库正文送进模型。
+
 ## Skill 的三项一等能力
 
 ### 1. 资料沉淀队列
@@ -114,6 +121,15 @@ TBD 太多时只拆批，不一轮清空；需要续跑时，建议放到 Codex 
 - 本次发现的问题；
 - 最优先处理的 3 件事；
 - 建议下一步。
+
+先运行：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/kb_health_inventory.py \
+  --vault-root "/你的/个人知识库路径"
+```
+
+脚本只输出计数、问题类型和有界候选路径，不输出页面正文。AI 再从每类候选中打开最优先的 1–3 页判断。
 
 ### 3. 定期创作复盘
 
@@ -172,6 +188,9 @@ python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py \
     ├── agents/openai.yaml
     ├── references/
     └── scripts/
+        ├── kb_health_inventory.py
+        ├── queue_inventory.py
+        └── verify_course_kb.py
 ```
 
 ## 文档

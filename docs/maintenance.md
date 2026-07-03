@@ -62,3 +62,16 @@ python3 skills/local-materials-to-course-kb/scripts/verify_course_kb.py \
 - TBD 多时只拆批，并建议低使用时段续跑；一次仍只处理一个批次。
 - 知识库体检默认只读，固定检查断链、重复、孤岛、未整理、待确认、过期和索引覆盖。
 - 创作复盘只看指定创作资料目录，按稳定规律、待观察、待确认管理证据。
+
+## 两阶段只读体检
+
+先由脚本做文件统计和候选定位：
+
+```bash
+python3 skills/local-materials-to-course-kb/scripts/kb_health_inventory.py \
+  --vault-root "/你的/个人知识库路径" --format json
+```
+
+脚本可以在本地解析 Markdown 和计算哈希，但 JSON 只输出计数、问题类型和相对路径，每类候选默认最多 50 项。原始转写目录只统计路径，不读取正文。
+
+第二阶段才由 AI 从每类候选中挑 1–3 个页面判断。不要把脚本扫描到的正文、整个分类或全库文件批量送进模型。
