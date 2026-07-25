@@ -25,7 +25,7 @@ Use this checklist before reporting completion for a sedimentation run.
 
 ## Knowledge Quality
 
-- Exactly one primary category was chosen.
+- The material-type gate was run: a knowledge-topic material has exactly one primary category; a problem-scenario material keeps the complete scenario and links deduplicated knowledge in the corresponding modules.
 - Approved content and rejected content are separated.
 - Existing category files and indexes were checked for duplicate or overlapping knowledge; duplicate content was skipped, merged, or cross-referenced instead of appended as a new section.
 - Uncertain, outdated, wrong, or high-risk content is visible in the audit record.
@@ -47,4 +47,7 @@ Use this checklist before reporting completion for a sedimentation run.
 
 - If `素材/待整理/待复核/课程资料/` was touched, the selected item has a clear suffix: `处理中`, `测试中`, `待复核`, `已写入`, or `已归档`.
 - If many `待复核` work areas exist, the final note reports the backlog and recommended next review batch.
+- In dialogue review, only the answered A or B was processed; the other question remains visible and the replacement question uses the same letter.
+- A confirmed conclusion was synchronized to affected official pages, templates, audit records, review drafts, indexes, current status, handoff summary, `index.md`, and `log.md`.
+- An automation wakeup without a user answer did not modify the knowledge base or invent confirmation.
 - `scripts/verify_course_kb.py` was run when structural changes, index edits, images, or source moves occurred.

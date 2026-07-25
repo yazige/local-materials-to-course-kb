@@ -105,13 +105,14 @@ class VaultWorkflowTest(unittest.TestCase):
             )
             self.assertNotIn("## 知识正文", root_index)
 
-    def test_skill_contains_three_paused_automation_presets(self) -> None:
+    def test_skill_contains_four_paused_automation_presets(self) -> None:
         text = AUTOMATION_PRESETS.read_text(encoding="utf-8")
 
         self.assertIn("资料沉淀队列", text)
+        self.assertIn("课程资料对话式复核", text)
         self.assertIn("本地知识库每周体检", text)
         self.assertIn("每周创作复盘", text)
-        self.assertEqual(text.count("默认状态：`PAUSED`"), 3)
+        self.assertEqual(text.count("默认状态：`PAUSED`"), 4)
         self.assertIn("不要自动运行", text)
 
 

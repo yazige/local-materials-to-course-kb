@@ -15,12 +15,19 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         cls.presets = (
             SKILL_ROOT / "references" / "automation-presets.md"
         ).read_text(encoding="utf-8")
+        cls.classification = (
+            SKILL_ROOT / "references" / "classification-and-audit.md"
+        ).read_text(encoding="utf-8")
+        cls.lifecycle = (
+            SKILL_ROOT / "references" / "workspace-lifecycle.md"
+        ).read_text(encoding="utf-8")
 
-    def test_skill_names_three_first_class_capabilities(self) -> None:
+    def test_skill_names_four_first_class_capabilities(self) -> None:
         for heading in (
             "## 能力一：资料沉淀队列",
-            "## 能力二：定期体检本地知识库",
-            "## 能力三：定期创作复盘",
+            "## 能力二：课程资料对话式复核",
+            "## 能力三：定期体检本地知识库",
+            "## 能力四：定期创作复盘",
         ):
             self.assertIn(heading, self.skill)
 
@@ -88,6 +95,57 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         self.assertIn("最优先处理的 3 件事", self.presets)
         self.assertIn("允许写入仅限", self.presets)
 
+    def test_dialogue_review_has_ab_state_machine_and_sync_contract(self) -> None:
+        combined = self.skill + self.lifecycle
+        for phrase in (
+            "AI 先总结材料",
+            "只把需要用户业务判断的结论提交确认",
+            "同时保留 A、B 两个待确认问题",
+            "用户回答 A 时，只处理 A",
+            "原样保留 B",
+            "补一个新 A",
+            "用户回答 B 时反向执行",
+            "暂停新问题",
+            "接力摘要",
+            "资料摘要",
+            "可沉淀知识",
+            "复核清单",
+            "`index.md`",
+            "`log.md`",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_scene_material_is_not_forced_into_one_primary_category(self) -> None:
+        combined = self.skill + self.classification
+        for phrase in (
+            "知识主题型",
+            "问题场景型",
+            "只选择一个主分类",
+            "不强行归入单一分类",
+            "保留完整场景",
+            "双向链接",
+            "可复用知识",
+            "对应模块",
+            "资料类型：问题场景型",
+            "场景入口",
+            "涉及模块",
+            "场景索引",
+            "没有权威归属",
+            "不要为了收口强行选择分类",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_dialogue_review_automation_is_paused_and_waits_for_user(self) -> None:
+        for phrase in (
+            "课程资料对话式复核",
+            "默认状态：`PAUSED`",
+            "已有未决 A/B 时，只展示现有 A/B",
+            "不要先修改知识库",
+            "不处理 TBD 新资料",
+            "不运行知识库体检或创作复盘",
+        ):
+            self.assertIn(phrase, self.presets)
+
 
 class PublicOnboardingTest(unittest.TestCase):
     @classmethod
@@ -118,7 +176,7 @@ class PublicOnboardingTest(unittest.TestCase):
             "用 Obsidian 打开",
             "验证",
             "安装 Skill",
-            "三项自动化",
+            "四项自动化",
         )
         first_path = self.readme.split("## 你会得到什么", 1)[0]
         for phrase in required:
