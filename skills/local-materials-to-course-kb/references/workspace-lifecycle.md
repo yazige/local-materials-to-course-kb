@@ -53,6 +53,47 @@ Raw transcripts may be opened only for the selected active batch after it enters
 
 Do not delete review items unless the user explicitly asks.
 
+## Dialogue Review Rule
+
+Use this rule when the user wants AI to summarize course drafts and submit only uncertain business conclusions for confirmation.
+
+### Resume gate
+
+1. Resume the current dialogue review before selecting another item.
+2. If the state or handoff already contains unresolved A/B, show those two questions unchanged and wait. Do not modify official knowledge first.
+3. If no dialogue review is active, inventory by status, select 1–3 related candidates, then enter dialogue with only one selected item.
+4. Do not process `TBD`, run a health check, or start a creation review in the same run.
+
+### A/B state machine
+
+- AI 先总结材料，只把需要用户业务判断的结论提交确认。
+- 同时保留 A、B 两个待确认问题。
+- Each question states: 所属模块、适用场景、本题判断对象、不包含的范围、AI 建议.
+- 用户回答 A 时，只处理 A，原样保留 B，完成后补一个新 A；用户回答 B 时反向执行。
+- If the user says the previous result is wrong, 暂停新问题, repair and verify the previous item first.
+- Silence, automation wakeup, or an enabled schedule is not user confirmation.
+
+### Confirmed-item sync contract
+
+After one answer is explicitly confirmed, update only affected files:
+
+1. official topic pages, necessary templates, and audit records;
+2. the selected item's `资料摘要`, `可沉淀知识`, and `复核清单`;
+3. affected category/root/scene indexes;
+4. current batch status and the dialogue `接力摘要`;
+5. root `index.md` and `log.md`.
+
+Keep the untouched A or B visible in state and handoff. Do not mark the whole review item complete merely because one conclusion was confirmed.
+
+### Scenario gate
+
+Before official writes, decide:
+
+- 知识主题型：只选择一个主分类；
+- 问题场景型：不强行归入单一分类，保留完整场景，可复用知识进入对应模块，并用双向链接连接。
+
+Do not use a cross-module scenario as permission to copy the same prose into several categories.
+
 ## Completion Rule
 
 - no active source batch is left without a status update;

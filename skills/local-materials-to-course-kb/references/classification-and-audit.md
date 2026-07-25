@@ -1,5 +1,23 @@
 # Classification And Audit Rules
 
+## Material Type Gate
+
+Before choosing a category, decide whether the material is:
+
+- **知识主题型**：围绕一个稳定知识主题展开。只选择一个主分类，其他用途只做索引交叉引用。
+- **问题场景型**：围绕一个具体问题、目标、约束和决策过程展开，且需要多个知识模块共同解决。不强行归入单一分类。
+
+For a problem scenario:
+
+1. 保留完整场景，包括问题、目标、约束、决策顺序和复盘方式；
+2. 把可复用知识维护到对应模块的 `01_知识主题/`；
+3. 场景页与模块知识建立双向链接；
+4. 不在多个分类复制同一份知识正文；
+5. 在状态中记录 `资料类型：问题场景型`、场景入口和涉及模块，不填写虚假的单一主分类；
+6. 项目已有场景目录时沿用真实路径；没有时先向用户确认入口，不擅自重构信息架构；
+7. 同步场景索引和实际承接知识的模块索引；总索引只更新导航和摘要，不复制多份来源正文；
+8. 某个知识点没有权威归属时标记待确认并暂停该项，不要为了收口强行选择分类。
+
 ## Category Decision Table
 
 | Folder | Use for |
@@ -13,7 +31,7 @@
 | G-管理领导力&导师培养 | Coaching, mentoring, management, leadership, team growth, feedback, performance, trainer development. |
 | H-个人成长&读书技能分享 | Reading notes, learning methods, thinking models, productivity, personal skills, general sharing topics. |
 
-If one material fits several categories, choose the category that matches the main teaching use. Add secondary references only in indexes.
+If a **knowledge-topic material** fits several categories, choose the category that matches the main teaching use. Add secondary references only in indexes. This one-primary-category rule does not apply to problem-scenario materials handled by the Material Type Gate.
 
 ## Document Update Targets
 
@@ -31,11 +49,12 @@ After every material is processed:
 
 1. Keep root `00_总索引.md` navigation-only: category links, cumulative count, latest update and one-sentence summaries. Never add knowledge正文 there.
 2. Deduplicate in this fixed order: root index → category index → filename/title/keyword search → candidate topic pages. Never open a whole category by default.
-3. Add one row to the category `已沉淀资料索引` table.
-4. Add course references only to the category `相关课程引用` table. Do not put source-index rows there.
-5. Update root `八大分类总览` with cumulative count, main courses, and latest update for the touched category.
-6. Add one row to root `最近处理记录`.
-7. If images or cases were added, fill the table at the top of `02_案例库.md`.
+3. For a knowledge-topic material, add one row to the primary category `已沉淀资料索引` table.
+4. For a problem scenario, update the scene index once and update only the module indexes that actually receive reusable knowledge.
+5. Add course references only to category `相关课程引用` tables. Do not duplicate the same source-index row across modules.
+6. Update root `八大分类总览` with cumulative count, main courses, and latest update for touched categories.
+7. Add one row to root `最近处理记录`.
+8. If images or cases were added, fill the table at the top of `02_案例库.md`.
 
 ## Audit Questions
 
