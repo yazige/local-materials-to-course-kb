@@ -67,9 +67,10 @@ Use this rule when the user wants AI to summarize course drafts and submit only 
 ### A/B state machine
 
 - AI 先总结材料，只把需要用户业务判断的结论提交确认。
-- 同时保留 A、B 两个待确认问题。
+- A、B 是待确认槽位，不是必须补满的配额；仅在存在独立核心判断时使用。
 - Each question states: 所属模块、适用场景、本题判断对象、不包含的范围、AI 建议.
-- 用户回答 A 时，只处理 A，原样保留 B，完成后补一个新 A；用户回答 B 时反向执行。
+- 同一判断链最多两层：第 1 层确认核心结论；第 2 层只补充必要边界或例外。第 2 层确认后必须收口，实施细节按实际情况判断；不得为了维持 A/B 数量继续生成同链追问。
+- 用户回答 A 时，只处理 A，原样保留仍属独立判断的 B；只有当前项仍有阻塞写入的独立核心结论时，才补一个新 A。用户回答 B 时反向执行。
 - If the user says the previous result is wrong, 暂停新问题, repair and verify the previous item first.
 - Silence, automation wakeup, or an enabled schedule is not user confirmation.
 
@@ -83,7 +84,7 @@ After one answer is explicitly confirmed, update only affected files:
 4. current batch status and the dialogue `接力摘要`;
 5. root `index.md` and `log.md`.
 
-Keep the untouched A or B visible in state and handoff. Do not mark the whole review item complete merely because one conclusion was confirmed.
+Keep the untouched A or B visible in state and handoff only while it remains an independent active conclusion. Do not mark the whole review item complete merely because one conclusion was confirmed; after all necessary conclusions have either been confirmed or sent to audit, mark the item `已写入` and stop generating same-chain questions.
 
 ### Scenario gate
 

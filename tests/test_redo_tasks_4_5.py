@@ -100,10 +100,10 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         for phrase in (
             "AI 先总结材料",
             "只把需要用户业务判断的结论提交确认",
-            "同时保留 A、B 两个待确认问题",
+            "A、B 是待确认槽位，不是必须补满的配额",
             "用户回答 A 时，只处理 A",
-            "原样保留 B",
-            "补一个新 A",
+            "原样保留仍属独立判断的 B",
+            "只有当前项仍有阻塞写入的独立核心结论时",
             "用户回答 B 时反向执行",
             "暂停新问题",
             "接力摘要",
@@ -112,6 +112,18 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
             "复核清单",
             "`index.md`",
             "`log.md`",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_dialogue_review_caps_each_decision_chain_at_two_levels(self) -> None:
+        combined = self.skill + self.lifecycle
+        for phrase in (
+            "同一判断链最多两层",
+            "第 2 层确认后必须收口",
+            "按实际情况判断",
+            "不得为了维持 A/B 数量继续生成同链追问",
+            "两层内形成结论后",
+            "标记该项“已写入”",
         ):
             self.assertIn(phrase, combined)
 
