@@ -50,7 +50,9 @@ Use this checklist before reporting completion for a sedimentation run.
 ## Work Area And Verification
 
 - If `素材/待整理/待复核/课程资料/` was touched, an active selected item has a clear suffix: `处理中`, `测试中`, `待复核`, or `已写入`; a successfully archived package is in `Done` with the `已归档` suffix.
-- If many `待复核` work areas exist, the final note reports the backlog and recommended next review batch.
+- 当前项完成并归档后，如果仍有待复核资料，已立即选择下一项；一次只保持一个活动复核项，没有批量深读后续资料。
+- 课程资料复核已循环继续，直到队列清空，或当前项出现待确认 A/B、上一项纠错、证据缺口、工具/权限失败、额度或上下文切换等真实阻塞。
+- 如果因真实阻塞暂停，当前状态、接力摘要和 `log.md` 已记录阻塞原因与恢复动作，且没有跳过受阻项。
 - In dialogue review, only the answered A or B was processed; the other question remains visible and the replacement question uses the same letter.
 - A confirmed conclusion was synchronized to affected official pages, templates, audit records, review drafts, indexes, current status, handoff summary, `index.md`, and `log.md`.
 - An automation wakeup without a user answer did not modify the knowledge base or invent confirmation.

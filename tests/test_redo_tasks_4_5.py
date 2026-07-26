@@ -144,6 +144,25 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         ):
             self.assertIn(phrase, combined)
 
+    def test_dialogue_review_auto_advances_until_backlog_is_empty(self) -> None:
+        combined = self.skill + self.lifecycle + self.completion + self.presets
+        for phrase in (
+            "当前项完成并归档后",
+            "仍有待复核资料",
+            "立即选择下一项",
+            "一次只保持一个活动复核项",
+            "循环继续",
+            "待确认 A/B",
+            "真实阻塞",
+            "队列清空",
+        ):
+            self.assertIn(phrase, combined)
+
+        self.assertNotIn(
+            "每次只处理当前选中的一个复核项，不因积压较多而扩大范围",
+            self.presets,
+        )
+
     def test_scene_material_is_not_forced_into_one_primary_category(self) -> None:
         combined = self.skill + self.classification
         for phrase in (
