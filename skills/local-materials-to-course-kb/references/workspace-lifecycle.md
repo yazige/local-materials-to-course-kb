@@ -4,7 +4,7 @@
 
 Use this reference when `素材/待整理/待复核/课程资料/` contains draft folders or generated course-package outputs.
 
-The review area is not the source queue. New sources enter through `TBD`; completed sources move to `Done`.
+The review area is not the source queue. New sources enter through `TBD`; completed sources and fully closed review packages move to `Done`.
 
 ## Folder Roles
 
@@ -24,7 +24,7 @@ The review area is not the source queue. New sources enter through `TBD`; comple
 | `测试中` | Output or extraction quality is being checked | Verify before official writes. |
 | `待复核` | Draft needs review, deduplication or audit | Prefer closing it before adding more drafts. |
 | `已写入` | Approved content is in official pages and indexes | Keep for short-term traceability. |
-| `已归档` | Review is finished | Do not reopen unless asked. |
+| `已归档` | Review is finished and the package is physically in `Done` | Do not reopen unless asked. |
 
 ## Start-of-Run Rule
 
@@ -47,11 +47,12 @@ When closing a course review item:
 4. Write approved, deduplicated content into `01_知识主题/`, then update `01_知识主文档.md` navigation.
 5. Update root index, category index, case table, audit record and current batch status.
 6. Mark `已写入` only after official files and indexes match.
-7. Mark `已归档` when no more action is expected.
+7. Treat `已写入` as a short-term pre-archive status. When no more action is expected and every independent item in the package is complete, move the package to `素材/待整理/Done/<稳定批次名>_已归档`.
+8. Mark `已归档` only after the move succeeds, update live path references, then run `verify_course_kb.py` and `queue_inventory.py`.
 
 Raw transcripts may be opened only for the selected active batch after it enters extraction or review. If draft and audit files are complete, do not reopen raw transcripts merely for reassurance.
 
-Do not delete review items unless the user explicitly asks.
+Moving a fully closed review package to `Done` is archival, not deletion. Never discard review items, overwrite an existing `Done` target, or move a multi-item package while any item remains active. If a name conflicts, use a date, batch directory, or stable suffix. If the move fails, keep the package in place as `已写入`, record `归档待重试` plus the reason and next action in state, handoff, and log, and do not claim it is archived.
 
 ## Dialogue Review Rule
 
@@ -84,7 +85,7 @@ After one answer is explicitly confirmed, update only affected files:
 4. current batch status and the dialogue `接力摘要`;
 5. root `index.md` and `log.md`.
 
-Keep the untouched A or B visible in state and handoff only while it remains an independent active conclusion. Do not mark the whole review item complete merely because one conclusion was confirmed; after all necessary conclusions have either been confirmed or sent to audit, mark the item `已写入` and stop generating same-chain questions.
+Keep the untouched A or B visible in state and handoff only while it remains an independent active conclusion. Do not mark the whole review item complete merely because one conclusion was confirmed; after all necessary conclusions have either been confirmed or sent to audit, mark the item `已写入` and stop generating same-chain questions. Apply the archive gate above only after every independent item in the package is complete.
 
 ### Scenario gate
 
@@ -100,4 +101,5 @@ Do not use a cross-module scenario as permission to copy the same prose into sev
 - no active source batch is left without a status update;
 - source files remain in TBD, the active batch, or Done;
 - touched review items have a clear status and next action;
+- no successfully closed review package remains in `待复核/课程资料`; a failed move remains there as `已写入` with `归档待重试`;
 - official writes are discoverable through indexes and audit records.

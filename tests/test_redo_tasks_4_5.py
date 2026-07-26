@@ -21,6 +21,9 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         cls.lifecycle = (
             SKILL_ROOT / "references" / "workspace-lifecycle.md"
         ).read_text(encoding="utf-8")
+        cls.completion = (
+            SKILL_ROOT / "references" / "completion-checklist.md"
+        ).read_text(encoding="utf-8")
 
     def test_skill_names_four_first_class_capabilities(self) -> None:
         for heading in (
@@ -124,6 +127,20 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
             "不得为了维持 A/B 数量继续生成同链追问",
             "两层内形成结论后",
             "标记该项“已写入”",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_dialogue_review_auto_archives_only_after_safe_completion(self) -> None:
+        combined = self.skill + self.lifecycle + self.completion + self.presets
+        for phrase in (
+            "同一轮任务",
+            "所有独立资料均已完成复核",
+            "只有移动成功后才能标记 `已归档`",
+            "只要任一资料仍在复核，就不得整体移动",
+            "绝不覆盖、合并或删除既有归档",
+            "归档待重试",
+            "verify_course_kb.py",
+            "queue_inventory.py",
         ):
             self.assertIn(phrase, combined)
 

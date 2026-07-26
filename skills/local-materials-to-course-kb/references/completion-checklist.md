@@ -39,15 +39,19 @@ Use this checklist before reporting completion for a sedimentation run.
 - Case-list tables were filled when cases or images were added; useful entries were not left only in narrative sections.
 - New knowledge was written to `01_知识主题/`; `01_知识主文档.md` remains a navigation page.
 - After successful completion, processed source materials from the active batch were moved to `素材/待整理/Done/YYYY-MM-DD_批次名/`, or any failure to move them was reported clearly.
+- For a course review, every independent item in the selected package is complete before the package is moved from `待复核/课程资料` to `Done/<稳定批次名>_已归档`.
+- A multi-item review package with any unfinished item was not moved as a whole; it was split only when source traceability and links could be preserved safely.
+- Existing `Done` content was never overwritten, merged, or deleted; name conflicts used a date, batch directory, or stable suffix.
+- `已归档` was set only after the move succeeded. A failed move left the package in place as `已写入` and recorded `归档待重试`, the reason, and the next action in current state, handoff, and `log.md`.
 - If the active batch folder became empty after the move, it was deleted so `素材/待整理/` does not accumulate stale `当前批次_*_处理中` folders.
 - If the active batch folder was not deleted, the final user message explains what remains and why.
 - The final user message states whether processed materials were moved to `Done/`, whether the active batch folder was removed, and reminds that future runs ignore `Done/` unless explicitly requested.
 
 ## Work Area And Verification
 
-- If `素材/待整理/待复核/课程资料/` was touched, the selected item has a clear suffix: `处理中`, `测试中`, `待复核`, `已写入`, or `已归档`.
+- If `素材/待整理/待复核/课程资料/` was touched, an active selected item has a clear suffix: `处理中`, `测试中`, `待复核`, or `已写入`; a successfully archived package is in `Done` with the `已归档` suffix.
 - If many `待复核` work areas exist, the final note reports the backlog and recommended next review batch.
 - In dialogue review, only the answered A or B was processed; the other question remains visible and the replacement question uses the same letter.
 - A confirmed conclusion was synchronized to affected official pages, templates, audit records, review drafts, indexes, current status, handoff summary, `index.md`, and `log.md`.
 - An automation wakeup without a user answer did not modify the knowledge base or invent confirmation.
-- `scripts/verify_course_kb.py` was run when structural changes, index edits, images, or source moves occurred.
+- `scripts/verify_course_kb.py` was run when structural changes, index edits, images, or source moves occurred; `scripts/queue_inventory.py` was also run after a review package moved to `Done`.
