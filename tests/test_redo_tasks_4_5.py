@@ -21,6 +21,9 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         cls.lifecycle = (
             SKILL_ROOT / "references" / "workspace-lifecycle.md"
         ).read_text(encoding="utf-8")
+        cls.completion = (
+            SKILL_ROOT / "references" / "completion-checklist.md"
+        ).read_text(encoding="utf-8")
 
     def test_skill_names_four_first_class_capabilities(self) -> None:
         for heading in (
@@ -100,10 +103,10 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
         for phrase in (
             "AI 先总结材料",
             "只把需要用户业务判断的结论提交确认",
-            "同时保留 A、B 两个待确认问题",
+            "A、B 是待确认槽位，不是必须补满的配额",
             "用户回答 A 时，只处理 A",
-            "原样保留 B",
-            "补一个新 A",
+            "原样保留仍属独立判断的 B",
+            "只有当前项仍有阻塞写入的独立核心结论时",
             "用户回答 B 时反向执行",
             "暂停新问题",
             "接力摘要",
@@ -114,6 +117,51 @@ class SkillFirstClassCapabilitiesTest(unittest.TestCase):
             "`log.md`",
         ):
             self.assertIn(phrase, combined)
+
+    def test_dialogue_review_caps_each_decision_chain_at_two_levels(self) -> None:
+        combined = self.skill + self.lifecycle
+        for phrase in (
+            "同一判断链最多两层",
+            "第 2 层确认后必须收口",
+            "按实际情况判断",
+            "不得为了维持 A/B 数量继续生成同链追问",
+            "两层内形成结论后",
+            "标记该项“已写入”",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_dialogue_review_auto_archives_only_after_safe_completion(self) -> None:
+        combined = self.skill + self.lifecycle + self.completion + self.presets
+        for phrase in (
+            "同一轮任务",
+            "所有独立资料均已完成复核",
+            "只有移动成功后才能标记 `已归档`",
+            "只要任一资料仍在复核，就不得整体移动",
+            "绝不覆盖、合并或删除既有归档",
+            "归档待重试",
+            "verify_course_kb.py",
+            "queue_inventory.py",
+        ):
+            self.assertIn(phrase, combined)
+
+    def test_dialogue_review_auto_advances_until_backlog_is_empty(self) -> None:
+        combined = self.skill + self.lifecycle + self.completion + self.presets
+        for phrase in (
+            "当前项完成并归档后",
+            "仍有待复核资料",
+            "立即选择下一项",
+            "一次只保持一个活动复核项",
+            "循环继续",
+            "待确认 A/B",
+            "真实阻塞",
+            "队列清空",
+        ):
+            self.assertIn(phrase, combined)
+
+        self.assertNotIn(
+            "每次只处理当前选中的一个复核项，不因积压较多而扩大范围",
+            self.presets,
+        )
 
     def test_scene_material_is_not_forced_into_one_primary_category(self) -> None:
         combined = self.skill + self.classification
