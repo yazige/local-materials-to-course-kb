@@ -50,6 +50,16 @@ def check_markdown_images(root: Path, markdown_file: Path, errors: list[str]) ->
             errors.append(f"图片链接不存在: {label} -> {target}")
 
 
+def cleanup_macos_metadata(root: Path) -> int:
+    """Remove Finder metadata only; never touch other hidden files or folders."""
+    removed = 0
+    for path in sorted(root.rglob(".DS_Store")):
+        if path.is_file() or path.is_symlink():
+            path.unlink()
+            removed += 1
+    return removed
+
+
 def build_report(
     vault_root: Optional[Path] = None,
     course_root: Optional[Path] = None,
@@ -57,6 +67,7 @@ def build_report(
     vault, course, queue = resolve_roots(vault_root, course_root)
     errors: list[str] = []
     warnings: list[str] = []
+    macos_metadata_removed_count = cleanup_macos_metadata(vault)
 
     required_files = [
         course / "00_总索引.md",
@@ -112,17 +123,6 @@ def build_report(
         for name in sorted(actual_categories - EXPECTED_CATEGORY_NAMES):
             warnings.append(f"发现额外分类，验证器未将其计入标准八类: {name}")
 
-    hidden_files = sorted(vault.rglob(".DS_Store"))
-    if hidden_files:
-        examples = "、".join(
-            relative_label(vault, path) for path in hidden_files[:5]
-        )
-        suffix = " 等" if len(hidden_files) > 5 else ""
-        warnings.append(
-            f"发现 {len(hidden_files)} 个 macOS 隐藏文件，可忽略或清理: "
-            f"{examples}{suffix}"
-        )
-
     for active in sorted(queue.glob("当前批次_*_处理中")):
         warnings.append(f"发现未完成当前批次: {relative_label(vault, active)}")
 
@@ -148,6 +148,7 @@ def build_report(
         "warnings": warnings,
         "category_count": len(category_reports),
         "course_review_status_counts": work_status_counts,
+        "macos_metadata_removed_count": macos_metadata_removed_count,
     }
 
 
@@ -159,10 +160,17 @@ def render_markdown(report: dict) -> str:
         f"- 课程知识库：`{report['course_root']}`",
         f"- 结构状态：{'通过' if report['ok'] else '存在错误'}",
         f"- 标准分类数量：{report['category_count']}",
+    ]
+    if report["macos_metadata_removed_count"]:
+        lines.append(
+            "- 已自动清理 macOS Finder 元数据："
+            f"{report['macos_metadata_removed_count']} 个 `.DS_Store`"
+        )
+    lines.extend([
         "",
         "## 错误",
         "",
-    ]
+    ])
     lines.extend(f"- {item}" for item in report["errors"]) if report[
         "errors"
     ] else lines.append("- 无")
