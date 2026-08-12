@@ -373,6 +373,8 @@ python3 scripts/queue_inventory.py --vault-root "<vault>"
 python3 scripts/verify_course_kb.py --vault-root "<vault>"
 ```
 
+该验证会在检查前自动删除知识库根目录内的 `.DS_Store`（macOS Finder 元数据），并在结果中说明清理数量；只处理这一种文件，不删除其他隐藏文件、目录、素材或归档。
+
 体检模式同时运行：
 
 ```bash

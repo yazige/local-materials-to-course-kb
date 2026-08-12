@@ -85,7 +85,7 @@ class MaintenanceScriptsTest(unittest.TestCase):
             )
 
 
-    def test_verify_course_kb_accepts_initialized_structure_with_warnings(self) -> None:
+    def test_verify_course_kb_removes_ds_store_before_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             root = Path(tmp_dir) / "kb"
             init_kb(root)
@@ -103,7 +103,9 @@ class MaintenanceScriptsTest(unittest.TestCase):
 
             self.assertEqual(code, 0)
             self.assertEqual(report["errors"], [])
-            self.assertTrue(any(".DS_Store" in item for item in report["warnings"]))
+            self.assertEqual(report["macos_metadata_removed_count"], 1)
+            self.assertFalse((root / "素材" / "待整理" / ".DS_Store").exists())
+            self.assertFalse(any(".DS_Store" in item for item in report["warnings"]))
             self.assertTrue(any("待复核" in item for item in report["warnings"]))
 
 
